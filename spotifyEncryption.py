@@ -1,18 +1,8 @@
-"""Here's the example from spotipy https://github.com/spotipy-dev/spotipy?tab=readme-ov-file#quick-start"""
-from spotapi import Song
+from lyricsgenius import Genius
 
-song = Song()
-gen = song.paginate_songs("weezer")
+genius = Genius("ytTQBFpeW9m1wOxySiu-h1mIJ_0qiv2E52oRSqoYR8NV5wE9Xka-Ngh2ugLUU88y")
+artist = genius.search_artist("Chappell Roan", max_songs=10, include_features=False)
+print(artist.songs)
 
-# # Paginates 100 songs at a time till there's no more
-# for batch in gen:
-#     for idx, item in enumerate(batch):
-#         print(idx, item['item']['data']['name'])
-    
-# ^ ONLY 6 LINES OF CODE
-
-# Alternatively, you can query a specfic amount
-songs = song.query_songs("weezer", limit=20)
-data = songs["data"]["searchV2"]["tracksV2"]["items"]
-for idx, item in enumerate(data):
-    print(idx+1, item['item']['data']['name'])
+song = artist.song("Casual")
+print(song.lyrics)
