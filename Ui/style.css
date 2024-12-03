@@ -1,0 +1,72 @@
+body {
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+    /*https://cssgradient.io*/
+    background: linear-gradient(45deg, #98fb98, #ffb6c1);
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.mainPage {
+    text-align: center;
+    background: #fff;
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 20px 40px;
+    width: 90%;
+    max-width: 500px;
+}
+
+/* Header styling */
+h1 {
+    font-size: 2rem;
+    color: #3a5f0b; /* Deep green */
+    margin-bottom: 20px;
+}
+
+/* Input styling */
+.message input {
+    padding: 10px;
+    width: 80%;
+    border: 2px solid #3a5f0b;
+    border-radius: 8px;
+    outline: none;
+    margin-bottom: 20px;
+    font-size: 1rem;
+}
+
+.buttons button {
+    background-color: #ff69b4;
+    color: #fff;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 8px;
+    margin: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.buttons button:hover {
+    background-color: #ff1493; 
+    transform: scale(1.05);
+}
+
+.output h2, .key h2 {
+    margin-top: 20px;
+    font-size: 1.5rem;
+    color: #3a5f0b; 
+    margin-bottom: 10px;
+}
+
+/*the green background in the box*/
+#outputBox, #keyBox{
+    background: #f0fff0;
+    border: 1px solid #3a5f0b;
+    border-radius: 8px;
+    padding: 15px;
+    min-height: 50px;
+}
