@@ -51,15 +51,67 @@ document.addEventListener('DOMContentLoaded', () => {
      */
     btnEncryptDecrypt.addEventListener('click', () => {
         clearDynamicContent();
-
-        // Create results field
+    
+        // Create fields to input message and key
+        const messageField = document.createElement('textarea');
+        messageField.rows = 3;
+        messageField.placeholder = 'Enter the message to Encrypt/Decrypt...';
+    
+        const keyField = document.createElement('input');
+        keyField.type = 'text';
+        keyField.placeholder = 'Enter the key...';
+    
+        const processButton = document.createElement('button');
+        processButton.textContent = currentMode === 'encrypt' ? 'Encrypt' : 'Decrypt';
+    
         const resultField = document.createElement('textarea');
-        resultField.rows = 5;
-        resultField.placeholder = `ASCII ${currentMode} results...`;
+        resultField.rows = 10;
         resultField.readOnly = true;
-
+        resultField.placeholder = currentMode === 'encrypt' ? 'Encrypted ASCII art will appear here...' : 'Decrypted message will appear here...';
+    
+        dynamicContent.appendChild(messageField);
+        dynamicContent.appendChild(keyField);
+        dynamicContent.appendChild(processButton);
         dynamicContent.appendChild(resultField);
+    
+        // Handle encryption/decryption request
+        processButton.addEventListener('click', async () => {
+            const message = messageField.value.trim();
+            const key = keyField.value.trim();
+    
+            if (!message || !key) {
+                resultField.value = 'Please enter both a message and a key.';
+                return;
+            }
+    
+            try {
+                const endpoint = currentMode === 'encrypt' ? '/encrypt' : '/decrypt';
+                const payload = currentMode === 'encrypt'
+                    ? { message, key }
+                    : { ascii_art: message, key };
+    
+                // Send request to Flask backend
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                });
+    
+                const data = await response.json();
+    
+                if (response.ok) {
+                    resultField.value = currentMode === 'encrypt'
+                        ? data.ascii_art
+                        : data.decrypted_message;
+                } else {
+                    resultField.value = `Error: ${data.error}`;
+                }
+            } catch (error) {
+                resultField.value = 'An error occurred while processing your request.';
+            }
+        });
     });
+    
 
     /**
      * Button 2: Stegano Encrypt/Decrypt
