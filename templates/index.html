@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Citrus</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="mainPage">
+        <h1>Citrus</h1>
+
+        <!-- Tab Navigation -->
+        <div class="tabs">
+            <button id="tabEncrypt" class="tab active">Encrypt</button>
+            <button id="tabDecrypt" class="tab">Decrypt</button>
+        </div>
+
+        <!-- Input Fields -->
+        <textarea id="text-to-encrypt" rows="5" placeholder="Enter text to Encrypt/Decrypt here..."></textarea>
+        <input type="text" id="passkey" placeholder="Enter your passkey here...">
+
+        <!-- Encryption Buttons -->
+        <div class="button-row">
+            <button id="btnEncryptDecrypt">ASCII</button>
+            <button id="btnImageOptions">Stegano</button>
+            <button id="btnOption3">Song</button>
+            <button id="btnOption4">Geo</button>
+        </div>
+
+        <div id="dynamicContent"></div>
+    </div>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+{
+    "configurations": [
+        // {
+        //     "type": "debugpy",
+        //     "request": "launch",
+        //     "name": "Launch Vigenere.py",
+        //     "program": "${workspaceFolder}/Vigenere.py"
+        // },
+        {
+            "type": "debugpy",
+            "request": "launch",
+            "name": "Launch StenoCipher.py",
+            "program": "${workspaceFolder}/GamerCipher.py"
+        }
+    ]
+}
