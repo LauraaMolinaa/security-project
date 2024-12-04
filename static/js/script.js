@@ -1,15 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
     const dynamicContent = document.getElementById('dynamicContent');
-    const textInput = document.getElementById('text-to-encrypt');
-    const passkeyInput = document.getElementById('passkey');
+    const tabEncrypt = document.getElementById('tabEncrypt');
+    const tabDecrypt = document.getElementById('tabDecrypt');
 
     const btnEncryptDecrypt = document.getElementById('btnEncryptDecrypt');
     const btnImageOptions = document.getElementById('btnImageOptions');
     const btnOption3 = document.getElementById('btnOption3');
     const btnOption4 = document.getElementById('btnOption4');
-
-    const tabEncrypt = document.getElementById('tabEncrypt');
-    const tabDecrypt = document.getElementById('tabDecrypt');
 
     let currentMode = 'encrypt'; // Default mode is Encrypt
 
@@ -31,15 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
         tabEncrypt.classList.toggle('active', mode === 'encrypt');
         tabDecrypt.classList.toggle('active', mode === 'decrypt');
 
-        // Update placeholder for text input
-        textInput.placeholder = mode === 'encrypt'
-            ? 'Enter text to Encrypt here...'
-            : 'Enter text to Decrypt here...';
-
-        // Reset text input visibility for Stegano-specific behavior
-        textInput.style.display = 'block';
-
-        clearDynamicContent(); // Clear dynamic content
+        clearDynamicContent(); // Clear the dynamic content
     };
 
     // Attach event listeners for tab switching
@@ -51,58 +40,53 @@ document.addEventListener('DOMContentLoaded', () => {
      */
     btnEncryptDecrypt.addEventListener('click', () => {
         clearDynamicContent();
-    
-        // Create fields to input message and key
+
         const messageField = document.createElement('textarea');
         messageField.rows = 3;
-        messageField.placeholder = 'Enter the message to Encrypt/Decrypt...';
-    
+        messageField.placeholder = `Enter the message to ${currentMode}...`;
+
         const keyField = document.createElement('input');
         keyField.type = 'text';
         keyField.placeholder = 'Enter the key...';
-    
+
         const processButton = document.createElement('button');
         processButton.textContent = currentMode === 'encrypt' ? 'Encrypt' : 'Decrypt';
-    
+
         const resultField = document.createElement('textarea');
         resultField.rows = 10;
         resultField.readOnly = true;
-        resultField.placeholder = currentMode === 'encrypt' ? 'Encrypted ASCII art will appear here...' : 'Decrypted message will appear here...';
-    
+        resultField.placeholder = `Result will appear here...`;
+
         dynamicContent.appendChild(messageField);
         dynamicContent.appendChild(keyField);
         dynamicContent.appendChild(processButton);
         dynamicContent.appendChild(resultField);
-    
-        // Handle encryption/decryption request
+
         processButton.addEventListener('click', async () => {
             const message = messageField.value.trim();
             const key = keyField.value.trim();
-    
+
             if (!message || !key) {
                 resultField.value = 'Please enter both a message and a key.';
                 return;
             }
-    
+
             try {
                 const endpoint = currentMode === 'encrypt' ? '/encrypt' : '/decrypt';
                 const payload = currentMode === 'encrypt'
                     ? { message, key }
                     : { ascii_art: message, key };
-    
-                // Send request to Flask backend
+
                 const response = await fetch(endpoint, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload),
                 });
-    
+
                 const data = await response.json();
-    
+
                 if (response.ok) {
-                    resultField.value = currentMode === 'encrypt'
-                        ? data.ascii_art
-                        : data.decrypted_message;
+                    resultField.value = data.ascii_art || data.decrypted_message;
                 } else {
                     resultField.value = `Error: ${data.error}`;
                 }
@@ -111,7 +95,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
-    
 
     /**
      * Button 2: Stegano Encrypt/Decrypt
@@ -120,72 +103,218 @@ document.addEventListener('DOMContentLoaded', () => {
         clearDynamicContent();
 
         if (currentMode === 'encrypt') {
-            // Encrypt mode: Provide options for Upload or AI
-            const select = document.createElement('select');
+            const messageField = document.createElement('textarea');
+            messageField.rows = 3;
+            messageField.placeholder = 'Enter the text to encrypt...';
+
+            const passkeyField = document.createElement('input');
+            passkeyField.type = 'text';
+            passkeyField.placeholder = 'Enter the passkey...';
+
+            const selectOption = document.createElement('select');
             const optionUpload = document.createElement('option');
             optionUpload.value = 'upload';
             optionUpload.textContent = 'Upload Image';
             const optionAI = document.createElement('option');
             optionAI.value = 'ai';
-            optionAI.textContent = 'AI Generate Image';
+            optionAI.textContent = 'Generate AI Image';
+            selectOption.appendChild(optionUpload);
+            selectOption.appendChild(optionAI);
 
-            select.appendChild(optionUpload);
-            select.appendChild(optionAI);
+            const uploadInput = document.createElement('input');
+            uploadInput.type = 'file';
+            uploadInput.accept = 'image/*';
+            uploadInput.style.display = 'none';
 
-            const uploadButton = document.createElement('button');
-            uploadButton.textContent = 'Browse Directory';
-            uploadButton.style.display = 'none';
-
-            const aiPrompt = document.createElement('textarea');
-            aiPrompt.rows = 3;
-            aiPrompt.placeholder = 'Enter AI prompt...';
-            aiPrompt.style.display = 'none';
+            const promptField = document.createElement('textarea');
+            promptField.rows = 3;
+            promptField.placeholder = 'Enter a prompt for the AI to generate an image...';
+            promptField.style.display = 'none';
 
             const generateButton = document.createElement('button');
-            generateButton.textContent = 'Generate';
+            generateButton.textContent = 'Generate Image';
             generateButton.style.display = 'none';
 
-            // Show/hide options based on selection
-            select.addEventListener('change', (e) => {
+            const encryptButton = document.createElement('button');
+            encryptButton.textContent = 'Encrypt';
+
+            selectOption.addEventListener('change', (e) => {
                 const selected = e.target.value;
-                uploadButton.style.display = selected === 'upload' ? 'block' : 'none';
-                aiPrompt.style.display = selected === 'ai' ? 'block' : 'none';
+                uploadInput.style.display = selected === 'upload' ? 'block' : 'none';
+                promptField.style.display = selected === 'ai' ? 'block' : 'none';
                 generateButton.style.display = selected === 'ai' ? 'block' : 'none';
             });
 
-            // Append components to dynamic content
-            dynamicContent.appendChild(select);
-            dynamicContent.appendChild(uploadButton);
-            dynamicContent.appendChild(aiPrompt);
+            dynamicContent.appendChild(messageField);
+            dynamicContent.appendChild(passkeyField);
+            dynamicContent.appendChild(selectOption);
+            dynamicContent.appendChild(uploadInput);
+            dynamicContent.appendChild(promptField);
             dynamicContent.appendChild(generateButton);
+            dynamicContent.appendChild(encryptButton);
 
-        } else {
-            // Decrypt mode: Upload Encrypted Image
-            textInput.style.display = 'none'; // Hide text field
-
-            const fileInput = document.createElement('input');
-            fileInput.type = 'file';
-            fileInput.accept = 'image/*';
-
-            const processButton = document.createElement('button');
-            processButton.textContent = 'Process';
-
-            const resultField = document.createElement('textarea');
-            resultField.rows = 5;
-            resultField.placeholder = 'Decryption results...';
-            resultField.readOnly = true;
-
-            // Show Process button only after selecting a file
-            fileInput.addEventListener('change', () => {
-                if (fileInput.files.length > 0) {
-                    processButton.style.display = 'block';
+            generateButton.addEventListener('click', async () => {
+                const prompt = promptField.value.trim();
+                if (!prompt) {
+                    alert('Please enter a prompt for image generation.');
+                    return;
+                }
+            
+                // Show a loading indicator above the encrypt button
+                const loadingIndicator = document.createElement('div');
+                loadingIndicator.textContent = 'Generating image... Please wait.';
+                loadingIndicator.classList.add('loading-indicator');
+                dynamicContent.insertBefore(loadingIndicator, encryptButton);
+            
+                try {
+                    const response = await fetch('/generate-ai-image', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ prompt }),
+                    });
+            
+                    if (response.ok) {
+                        const blob = await response.blob();
+                        const url = URL.createObjectURL(blob);
+            
+                        // Replace the loading indicator with the generated image
+                        const imgPreview = document.createElement('img');
+                        imgPreview.src = url;
+                        imgPreview.alt = 'Generated Image Preview';
+                        imgPreview.style.width = '200px';
+                        imgPreview.classList.add('generated-image');
+                        dynamicContent.replaceChild(imgPreview, loadingIndicator);
+            
+                        // Add a save button if it doesn't already exist
+                        const saveButton = dynamicContent.querySelector('button.save-image');
+                        if (!saveButton) {
+                            const newSaveButton = document.createElement('button');
+                            newSaveButton.textContent = 'Save Image';
+                            newSaveButton.classList.add('save-image');
+                            newSaveButton.addEventListener('click', () => {
+                                const link = document.createElement('a');
+                                link.href = url;
+                                link.download = 'generated_image.png';
+                                link.click();
+                            });
+                            dynamicContent.insertBefore(newSaveButton, encryptButton.nextSibling);
+                        }
+                    } else {
+                        const error = await response.json();
+                        alert(`Error: ${error.error}`);
+                        dynamicContent.removeChild(loadingIndicator);
+                    }
+                } catch (error) {
+                    alert('Error during image generation.');
+                    dynamicContent.removeChild(loadingIndicator);
                 }
             });
+            
+            
+            encryptButton.addEventListener('click', async () => {
+                const message = messageField.value.trim();
+                const imageFile = uploadInput.files?.[0];
+                const prompt = promptField.value.trim();
 
-            // Append components to dynamic content
-            dynamicContent.appendChild(fileInput);
-            dynamicContent.appendChild(processButton);
+                if (!message) {
+                    alert('Please enter a message.');
+                    return;
+                }
+
+                const formData = new FormData();
+                formData.append('message', message);
+                if (imageFile) {
+                    formData.append('image', imageFile);
+                } else if (prompt) {
+                    formData.append('prompt', prompt);
+                } else {
+                    alert('Please upload an image or enter a prompt.');
+                    return;
+                }
+            
+                try {
+                    const response = await fetch('/stegano/encrypt', {
+                        method: 'POST',
+                        body: formData,
+                    });
+            
+                    if (response.ok) {
+                        const blob = await response.blob();
+                        const url = URL.createObjectURL(blob);
+            
+                        // Display the encoded image
+                        const imgPreview = document.createElement('img');
+                        imgPreview.src = url;
+                        imgPreview.alt = 'Encoded Image Preview';
+                        imgPreview.style.width = '200px';
+                        dynamicContent.appendChild(imgPreview);
+            
+                        // Add a save button
+                        const saveButton = document.createElement('button');
+                        saveButton.textContent = 'Save Image';
+                        saveButton.addEventListener('click', () => {
+                            const link = document.createElement('a');
+                            link.href = url;
+                            link.download = 'encoded_image.png';
+                            link.click();
+                        });
+                        dynamicContent.appendChild(saveButton);
+                    } else {
+                        const error = await response.json();
+                        alert(`Error: ${error.error}`);
+                    }
+                } catch (error) {
+                    alert('An error occurred during encryption.');
+                }
+            });
+            
+        } else {
+            const uploadInput = document.createElement('input');
+            uploadInput.type = 'file';
+            uploadInput.accept = 'image/*';
+
+            const passkeyField = document.createElement('input');
+            passkeyField.type = 'text';
+            passkeyField.placeholder = 'Enter the passkey...';
+
+            const decryptButton = document.createElement('button');
+            decryptButton.textContent = 'Decrypt';
+
+            const resultField = document.createElement('textarea');
+            resultField.rows = 3;
+            resultField.readOnly = true;
+            resultField.placeholder = 'Decoded message will appear here...';
+
+            dynamicContent.appendChild(uploadInput);
+            dynamicContent.appendChild(passkeyField);
+            dynamicContent.appendChild(decryptButton);
             dynamicContent.appendChild(resultField);
+
+            decryptButton.addEventListener('click', async () => {
+                const imageFile = uploadInput.files?.[0];
+                const passkey = passkeyField.value.trim();
+
+                if (!imageFile || !passkey) {
+                    alert('Please upload an image and enter the passkey.');
+                    return;
+                }
+
+                const formData = new FormData();
+                formData.append('image', imageFile);
+                formData.append('passkey', passkey);
+
+                const response = await fetch('/stegano/decrypt', {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    resultField.value = data.message;
+                } else {
+                    alert('Error during decryption.');
+                }
+            });
         }
     });
 
@@ -195,11 +324,10 @@ document.addEventListener('DOMContentLoaded', () => {
     btnOption3.addEventListener('click', () => {
         clearDynamicContent();
 
-        // Create results field
         const resultField = document.createElement('textarea');
         resultField.rows = 5;
-        resultField.placeholder = `Song ${currentMode} results...`;
         resultField.readOnly = true;
+        resultField.placeholder = `Song ${currentMode} results...`;
 
         dynamicContent.appendChild(resultField);
     });
@@ -210,11 +338,10 @@ document.addEventListener('DOMContentLoaded', () => {
     btnOption4.addEventListener('click', () => {
         clearDynamicContent();
 
-        // Create results field
         const resultField = document.createElement('textarea');
         resultField.rows = 5;
-        resultField.placeholder = `Geo ${currentMode} results...`;
         resultField.readOnly = true;
+        resultField.placeholder = `Geo ${currentMode} results...`;
 
         dynamicContent.appendChild(resultField);
     });

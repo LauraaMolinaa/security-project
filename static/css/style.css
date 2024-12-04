@@ -86,3 +86,54 @@ button:hover {
     background-color: #3a5f0b;
     color: #fff;
 }
+
+/* Style for loading indicator */
+div.loading-indicator {
+    font-size: 1.1rem;
+    color: #6a6a6a;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+/* Style for the generated image preview */
+img.generated-image {
+    display: block;
+    margin: 10px auto;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/* Style for the encrypt button */
+button.encrypt-button {
+    margin-top: 15px;
+    padding: 10px 20px;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button.encrypt-button:hover {
+    background-color: #45a049;
+}
+
+/* Style for the save button */
+button.save-image {
+    display: block;
+    margin: 10px auto;
+    padding: 10px 20px;
+    background-color: #2196f3;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button.save-image:hover {
+    background-color: #1e88e5;
+}

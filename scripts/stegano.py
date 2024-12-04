@@ -25,17 +25,17 @@ def generate_image(prompt):
         return None
 
 # Function to encode a secret message into an image
-def encode_message(input_image_path, output_image_path, secret_message):
+def encode_message(input_image_path, secret_message):
     """
     Encodes a secret message into an image using the Stegano library.
     Saves the new image with the hidden message.
     """
     try:
-        # Use Stegano's LSB method to hide the message
         secret_image = lsb.hide(input_image_path, secret_message)
-        # Save the modified image to the specified path
-        secret_image.save(output_image_path)
-        print(f"Message encoded and saved as '{output_image_path}'")
+        output = BytesIO()
+        secret_image.save(output, format='PNG')
+        output.seek(0)
+        return output
     except Exception as e:
         print(f"Error during encoding: {e}")
 
@@ -48,10 +48,7 @@ def decode_message(image_path):
     try:
         # Extract the hidden message from the image
         secret_message = lsb.reveal(image_path)
-        if secret_message:
-            print(f"Decoded message: {secret_message}")
-        else:
-            print("No hidden message found in the image.")
+        return secret_message if secret_message else "No hidden message found."
     except Exception as e:
         print(f"Error during decoding: {e}")
 
