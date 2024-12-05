@@ -5,6 +5,7 @@ import requests
 from flask import Flask, request, jsonify, render_template, send_file
 from scripts.vigenere import encrypt_to_ascii_art, decrypt_from_ascii_art
 from scripts.stegano import generate_image, encode_message, decode_message
+from scripts.rsa import rsa_encrypt, rsa_decrypt
 from stegano import lsb
 from io import BytesIO
 
@@ -46,12 +47,10 @@ def decrypt():
     except ValueError as e:
         return jsonify({'error': str(e)}), 400
 
+
 # STEGANO ENDPOINTS
 @app.route('/stegano/encrypt', methods=['POST'])
 def stegano_encrypt():
-    """
-    Encrypts a secret message into an image. Accepts either an uploaded image or generates one based on a prompt.
-    """
     secret_message = request.form.get('message')
     prompt = request.form.get('prompt')
 
@@ -82,9 +81,6 @@ def stegano_encrypt():
 
 @app.route('/stegano/decrypt', methods=['POST'])
 def stegano_decrypt():
-    """
-    Decrypts a hidden message from an uploaded image.
-    """
     if 'image' not in request.files:
         return jsonify({'error': 'Image is required for decryption'}), 400
 
@@ -101,9 +97,6 @@ def stegano_decrypt():
 
 @app.route('/generate-ai-image', methods=['POST'])
 def generate_ai_image():
-    """
-    Generates an image based on a text prompt using Pollinations.AI.
-    """
     data = request.json
     prompt = data.get('prompt')
 
@@ -116,5 +109,17 @@ def generate_ai_image():
 
     # Return the generated image for the frontend to display
     return send_file(generated_image, mimetype='image/png')
+
+
+# RSA Endpoints
+@app.route('/rsa/encrypt', methods=['POST'])
+def rsa_encrypt_endpoint():
+    return rsa_encrypt(request)
+
+@app.route('/rsa/decrypt', methods=['POST'])
+def rsa_decrypt_endpoint():
+    return rsa_decrypt(request)
+
+
 if __name__ == '__main__':
     app.run(debug=True)

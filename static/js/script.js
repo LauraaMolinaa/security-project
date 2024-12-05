@@ -318,6 +318,112 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+        /**
+     * Button RSA
+     */
+        const btnRSA = document.getElementById('btnRSA');
+
+        btnRSA.addEventListener('click', () => {
+            clearDynamicContent();
+        
+            if (currentMode === 'encrypt') {
+                // RSA Encryption UI
+                const messageField = document.createElement('textarea');
+                messageField.rows = 3;
+                messageField.placeholder = 'Enter the message to encrypt...';
+        
+                const encryptButton = document.createElement('button');
+                encryptButton.textContent = 'Encrypt';
+        
+                const resultField = document.createElement('textarea');
+                resultField.rows = 10;
+                resultField.readOnly = true;
+                resultField.placeholder = 'Encrypted data and keys will appear here...';
+        
+                dynamicContent.appendChild(messageField);
+                dynamicContent.appendChild(encryptButton);
+                dynamicContent.appendChild(resultField);
+        
+                encryptButton.addEventListener('click', async () => {
+                    const message = messageField.value.trim();
+                    if (!message) {
+                        resultField.value = 'Please enter a message.';
+                        return;
+                    }
+        
+                    try {
+                        const response = await fetch('/rsa/encrypt', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ message }),
+                        });
+        
+                        const data = await response.json();
+        
+                        if (response.ok) {
+                            resultField.value = `Ciphertext: ${data.ciphertext}\n\nPublic Key:\n${data.public_key}\n\nPrivate Key:\n${data.private_key}`;
+                        } else {
+                            resultField.value = `Error: ${data.error}`;
+                        }
+                    } catch (error) {
+                        resultField.value = 'An error occurred during encryption.';
+                    }
+                });
+            } else {
+                // RSA Decryption UI
+                const ciphertextField = document.createElement('textarea');
+                ciphertextField.rows = 3;
+                ciphertextField.placeholder = 'Enter the ciphertext...';
+        
+                const privateKeyField = document.createElement('textarea');
+                privateKeyField.rows = 5;
+                privateKeyField.placeholder = 'Enter the private key...';
+        
+                const decryptButton = document.createElement('button');
+                decryptButton.textContent = 'Decrypt';
+        
+                const resultField = document.createElement('textarea');
+                resultField.rows = 10;
+                resultField.readOnly = true;
+                resultField.placeholder = 'Decrypted message will appear here...';
+        
+                dynamicContent.appendChild(ciphertextField);
+                dynamicContent.appendChild(privateKeyField);
+                dynamicContent.appendChild(decryptButton);
+                dynamicContent.appendChild(resultField);
+        
+                decryptButton.addEventListener('click', async () => {
+                    const ciphertext = ciphertextField.value.trim();
+                    const privateKey = privateKeyField.value.trim();
+        
+                    if (!ciphertext || !privateKey) {
+                        resultField.value = 'Please enter both ciphertext and private key.';
+                        return;
+                    }
+        
+                    try {
+                        const response = await fetch('/rsa/decrypt', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ ciphertext, private_key: privateKey }),
+                        });
+        
+                        const data = await response.json();
+        
+                        if (response.ok) {
+                            resultField.value = `Decrypted Message: ${data.plaintext}`;
+                        } else {
+                            resultField.value = `Error: ${data.error}`;
+                        }
+                    } catch (error) {
+                        resultField.value = 'An error occurred during decryption.';
+                    }
+                });
+            }
+        });
+        
+
+
     /**
      * Button 3: Song Encrypt/Decrypt
      */
