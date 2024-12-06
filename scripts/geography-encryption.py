@@ -3,7 +3,7 @@
 import pip._vendor.requests 
 import random
 from Cryptodome.Cipher import AES
-from crypto.Random import get_random_bytes
+from Cryptodome.Random import get_random_bytes
 
 payload = {}
 headers= {
