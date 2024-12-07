@@ -13,3 +13,5 @@ song = genius.search_song(song_id=nbr)
 print(song.title)
 print(song.artist)
 print(song.lyrics)
+
+#Encryption

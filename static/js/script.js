@@ -429,11 +429,59 @@ document.addEventListener('DOMContentLoaded', () => {
      */
     btnOption3.addEventListener('click', () => {
         clearDynamicContent();
+        if(currentMode == 'encrypt'){
+            //Song encryption UI
+            const messageField = document.createElement('textarea');
+            messageField.rows = 3;
+            messageField.placeholder = 'Enter the message to encrypt...';
 
-        const resultField = document.createElement('textarea');
-        resultField.rows = 5;
-        resultField.readOnly = true;
-        resultField.placeholder = `Song ${currentMode} results...`;
+            const encryptButton = document.createElement('button');
+            encryptButton.textContent = 'Encrypt';
+
+            const resultField = document.createElement('textarea');
+            resultField.rows = 10;
+            resultField.readOnly = true;
+            resultField.placeholder = 'Encrypted data and keys will appear here...';
+
+            const keyField = document.createElement('textarea');
+            keyField.rows = 1;
+            keyField.readOnly = true;
+            keyField.placeholder = 'Key will appear here...';
+
+            dynamicContent.appendChild(messageField);
+            dynamicContent.appendChild(encryptButton);
+            dynamicContent.appendChild(resultField);
+            dynamicContent.appendChild(keyField);
+
+            encryptButton.addEventListener('click', async () => {
+                const message = messageField.value.trim();
+                if (!message) {
+                    resultField.value = 'Please enter a message.';
+                    return;
+                }
+    
+                try {
+                    const response = await fetch('/song/encrypt', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ message }),
+                    });
+    
+                    const data = await response.json();
+    
+                    if (response.ok) {
+                        resultField.value = `Ciphertext: ${data.ciphertext}\n\nPublic Key:\n${data.public_key}\n\nPrivate Key:\n${data.private_key}`;
+                        keyField.value = `Public Key:\n${data.public_key}`;
+                    } else {
+                        resultField.value = `Error: ${data.error}`;
+                    }
+                } catch (error) {
+                    resultField.value = 'An error occurred during encryption.';
+                }
+            });
+        }
+
+        
 
         dynamicContent.appendChild(resultField);
     });
