@@ -36,7 +36,6 @@ def main(request = None):
 
   # adding more to capital to make key longer
   data_to_ascii: str = capital
-  print(data_to_ascii)
 
   # turning data to ascii
   secret_data_list: list = [ord(char) for char in data_to_ascii]
@@ -46,7 +45,6 @@ def main(request = None):
   
   salt = os.urandom(32)
   secret_data_bytes = secret_data.encode('utf-8') + salt
-  print(secret_data_bytes)
 
   # using  a 16 byte key which is equivalent to a 128 bit key 
   key = get_random_bytes(16)
@@ -57,7 +55,33 @@ def main(request = None):
   nonce = cipher_encrypt.nonce
 
   cipher_decrypt = AES.new(key, AES.MODE_EAX, nonce)
-  data = cipher_decrypt.decrypt(ciphertext)
+  decrypted_data_salt = cipher_decrypt.decrypt(ciphertext)
+
+  # ignoring salt
+  decrypted_data: bytes = ""
+  if len(decrypted_data_salt) > 32:
+    decrypted_data = decrypted_data_salt[:-32]
+  else: 
+    print("no bytes to decrypt, only salt")
+    
+  ascii_to_data = decrypted_data.decode('utf-8')
+
+  i = 0
+  data: str = ""
+
+  while i < len(ascii_to_data) - 2:
+    ascii_nbr = ascii_to_data[i] + ascii_to_data[i + 1] + ascii_to_data[i + 2]
+    
+    if int(ascii_nbr) > ord('z'):
+      ascii_nbr = ascii_to_data[i] + ascii_to_data[i + 1]
+      print(chr(int(ascii_nbr)))
+      data += chr(int(ascii_nbr))
+      i = i + 2
+      
+    else: 
+      print(chr(int(ascii_nbr)))
+      data += chr(int(ascii_nbr))
+      i = i + 3
 
   # return jsonify({
   #   'ciphertext': ciphertext, 
