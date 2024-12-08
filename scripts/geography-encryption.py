@@ -14,11 +14,11 @@ def main(request = None):
   }
 
   country_codes_list: list = [
-      "ven", "can", "dza", "arm", "bhs", "bgr", "chn", "flk", "gum", "ita", "lby", "mli", "nzl", "png", "zaf" 
+      "ven", "jam", "dza", "arm", "bhs", "bgr", "chn", "flk", "gum", "ita", "lby", "mli", "nzl", "png", "zaf" 
   ]
 
   country: str = random.choice(country_codes_list)
-
+  
   url = "https://api.apilayer.com/geo/country/code/"+country
 
   response = pip._vendor.requests.request("GET", url, headers=headers, data = payload)
@@ -32,7 +32,7 @@ def main(request = None):
   capital = response_data[0].get("capital")
 
   if capital is None:
-    return jsonify({'error': 'Capital city is '+capital+'and Country is '+country}), 404
+    return jsonify({'error': 'Capital city is '+capital}), 404
 
   # adding more to capital to make key longer
   data_to_ascii: str = capital
