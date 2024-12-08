@@ -102,6 +102,7 @@ def asciiCipher_encrypt(message, lyrics):
     lines = lyrics.split('\n')
     songLyrics = ''.join(lines[1:])
 
+    #if song is too short add dummy text
     if len(songLyrics) < len(message):
         songLyrics += "a" * (len(message) - len(songLyrics))
 
@@ -120,9 +121,11 @@ def asciiCipher_encrypt(message, lyrics):
     return encryptedMessage
 
 def asciiCipher_decrypt(encryptedMessage, lyrics):
+    #skip the first line
     lines = lyrics.split('\n')
     songLyrics = ''.join(lines[1:])
 
+    #if song is too short add dummy text
     if len(songLyrics) < len(encryptedMessage):
         songLyrics += "a" * (len(encryptedMessage) - len(songLyrics))
 
