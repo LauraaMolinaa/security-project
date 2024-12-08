@@ -535,7 +535,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const data = await response.json();
     
                     if (response.ok) {
-                        resultField.value = `${data.ciphertext}`;
+                        resultField.value = `${data.message}`;
                         keyField.value = `Title:${data.title}\nArtist:${data.artist}`;
                     } else {
                         resultField.value = `Error: ${data.error}`;
