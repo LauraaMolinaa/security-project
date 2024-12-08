@@ -1,4 +1,3 @@
-# api key TAAV7tfSDQX6liwJzxA1YeC05176YZpt
 
 import pip._vendor.requests 
 from flask import jsonify
@@ -34,14 +33,8 @@ def geo_encryption(request):
   if capital is None:
     return jsonify({'error': 'Capital city is '+capital}), 404
 
-  # adding more to capital to make key longer
-  data_to_ascii: str = capital
 
-  # turning data to ascii
-  secret_data_list: list = [ord(char) for char in data_to_ascii]
-  secret_data: str = ""
-  for data in secret_data_list:
-    secret_data += str(data)
+  secret_data = data_to_ascii(capital)
   
   salt = os.urandom(32)
   secret_data_bytes = secret_data.encode('utf-8') + salt
@@ -59,6 +52,15 @@ def geo_encryption(request):
     'nonce': nonce, 
     'key': key
   })
+
+def data_to_ascii(capital):
+  # turning data to ascii
+  secret_data_list: list = [ord(char) for char in capital]
+  secret_data: str = ""
+  for data in secret_data_list:
+    secret_data += str(data)
+
+  return secret_data  
 
 def geo_decryption(request):
   data = request.json

@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
      * Clear all dynamic content.
      */
     const clearDynamicContent = () => {
+        // @ts-ignore
         dynamicContent.innerHTML = '';
     };
 
@@ -25,19 +26,24 @@ document.addEventListener('DOMContentLoaded', () => {
         currentMode = mode;
 
         // Toggle active tab styling
+        // @ts-ignore
         tabEncrypt.classList.toggle('active', mode === 'encrypt');
+        // @ts-ignore
         tabDecrypt.classList.toggle('active', mode === 'decrypt');
 
         clearDynamicContent(); // Clear the dynamic content
     };
 
     // Attach event listeners for tab switching
+    // @ts-ignore
     tabEncrypt.addEventListener('click', () => switchTab('encrypt'));
+    // @ts-ignore
     tabDecrypt.addEventListener('click', () => switchTab('decrypt'));
 
     /**
      * Button 1: ASCII Encrypt/Decrypt
      */
+    // @ts-ignore
     btnEncryptDecrypt.addEventListener('click', () => {
         clearDynamicContent();
 
@@ -57,9 +63,13 @@ document.addEventListener('DOMContentLoaded', () => {
         resultField.readOnly = true;
         resultField.placeholder = `Result will appear here...`;
 
+        // @ts-ignore
         dynamicContent.appendChild(messageField);
+        // @ts-ignore
         dynamicContent.appendChild(keyField);
+        // @ts-ignore
         dynamicContent.appendChild(processButton);
+        // @ts-ignore
         dynamicContent.appendChild(resultField);
 
         processButton.addEventListener('click', async () => {
@@ -99,6 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
     /**
      * Button 2: Stegano Encrypt/Decrypt
      */
+    // @ts-ignore
     btnImageOptions.addEventListener('click', () => {
         clearDynamicContent();
 
@@ -139,18 +150,26 @@ document.addEventListener('DOMContentLoaded', () => {
             encryptButton.textContent = 'Encrypt';
 
             selectOption.addEventListener('change', (e) => {
+                // @ts-ignore
                 const selected = e.target.value;
                 uploadInput.style.display = selected === 'upload' ? 'block' : 'none';
                 promptField.style.display = selected === 'ai' ? 'block' : 'none';
                 generateButton.style.display = selected === 'ai' ? 'block' : 'none';
             });
 
+            // @ts-ignore
             dynamicContent.appendChild(messageField);
+            // @ts-ignore
             dynamicContent.appendChild(passkeyField);
+            // @ts-ignore
             dynamicContent.appendChild(selectOption);
+            // @ts-ignore
             dynamicContent.appendChild(uploadInput);
+            // @ts-ignore
             dynamicContent.appendChild(promptField);
+            // @ts-ignore
             dynamicContent.appendChild(generateButton);
+            // @ts-ignore
             dynamicContent.appendChild(encryptButton);
 
             generateButton.addEventListener('click', async () => {
@@ -164,6 +183,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const loadingIndicator = document.createElement('div');
                 loadingIndicator.textContent = 'Generating image... Please wait.';
                 loadingIndicator.classList.add('loading-indicator');
+                // @ts-ignore
                 dynamicContent.insertBefore(loadingIndicator, encryptButton);
             
                 try {
@@ -183,9 +203,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         imgPreview.alt = 'Generated Image Preview';
                         imgPreview.style.width = '200px';
                         imgPreview.classList.add('generated-image');
+                        // @ts-ignore
                         dynamicContent.replaceChild(imgPreview, loadingIndicator);
             
                         // Add a save button if it doesn't already exist
+                        // @ts-ignore
                         const saveButton = dynamicContent.querySelector('button.save-image');
                         if (!saveButton) {
                             const newSaveButton = document.createElement('button');
@@ -197,15 +219,18 @@ document.addEventListener('DOMContentLoaded', () => {
                                 link.download = 'generated_image.png';
                                 link.click();
                             });
+                            // @ts-ignore
                             dynamicContent.insertBefore(newSaveButton, encryptButton.nextSibling);
                         }
                     } else {
                         const error = await response.json();
                         alert(`Error: ${error.error}`);
+                        // @ts-ignore
                         dynamicContent.removeChild(loadingIndicator);
                     }
                 } catch (error) {
                     alert('Error during image generation.');
+                    // @ts-ignore
                     dynamicContent.removeChild(loadingIndicator);
                 }
             });
@@ -247,6 +272,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         imgPreview.src = url;
                         imgPreview.alt = 'Encoded Image Preview';
                         imgPreview.style.width = '200px';
+                        // @ts-ignore
                         dynamicContent.appendChild(imgPreview);
             
                         // Add a save button
@@ -258,6 +284,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             link.download = 'encoded_image.png';
                             link.click();
                         });
+                        // @ts-ignore
                         dynamicContent.appendChild(saveButton);
                     } else {
                         const error = await response.json();
@@ -285,9 +312,13 @@ document.addEventListener('DOMContentLoaded', () => {
             resultField.readOnly = true;
             resultField.placeholder = 'Decoded message will appear here...';
 
+            // @ts-ignore
             dynamicContent.appendChild(uploadInput);
+            // @ts-ignore
             dynamicContent.appendChild(passkeyField);
+            // @ts-ignore
             dynamicContent.appendChild(decryptButton);
+            // @ts-ignore
             dynamicContent.appendChild(resultField);
 
             decryptButton.addEventListener('click', async () => {
@@ -323,6 +354,7 @@ document.addEventListener('DOMContentLoaded', () => {
      */
         const btnRSA = document.getElementById('btnRSA');
 
+        // @ts-ignore
         btnRSA.addEventListener('click', () => {
             clearDynamicContent();
         
@@ -340,8 +372,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 resultField.readOnly = true;
                 resultField.placeholder = 'Encrypted data and keys will appear here...';
         
+                // @ts-ignore
                 dynamicContent.appendChild(messageField);
+                // @ts-ignore
                 dynamicContent.appendChild(encryptButton);
+                // @ts-ignore
                 dynamicContent.appendChild(resultField);
         
                 encryptButton.addEventListener('click', async () => {
@@ -387,9 +422,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 resultField.readOnly = true;
                 resultField.placeholder = 'Decrypted message will appear here...';
         
+                // @ts-ignore
                 dynamicContent.appendChild(ciphertextField);
+                // @ts-ignore
                 dynamicContent.appendChild(privateKeyField);
+                // @ts-ignore
                 dynamicContent.appendChild(decryptButton);
+                // @ts-ignore
                 dynamicContent.appendChild(resultField);
         
                 decryptButton.addEventListener('click', async () => {
@@ -427,6 +466,7 @@ document.addEventListener('DOMContentLoaded', () => {
     /**
      * Button 3: Song Encrypt/Decrypt
      */
+    // @ts-ignore
     btnOption3.addEventListener('click', () => {
         clearDynamicContent();
 
@@ -435,20 +475,50 @@ document.addEventListener('DOMContentLoaded', () => {
         resultField.readOnly = true;
         resultField.placeholder = `Song ${currentMode} results...`;
 
+        // @ts-ignore
         dynamicContent.appendChild(resultField);
     });
 
     /**
      * Button 4: Geo Encrypt/Decrypt
      */
+    // @ts-ignore
     btnOption4.addEventListener('click', () => {
         clearDynamicContent();
 
-        const resultField = document.createElement('textarea');
-        resultField.rows = 5;
-        resultField.readOnly = true;
-        resultField.placeholder = `Geo ${currentMode} results...`;
+        if(currentMode === 'encrypt') {
 
+            const encryptButton = document.createElement('button');
+            encryptButton.textContent = 'Encrypt';
+
+            const resultField = document.createElement('textarea');
+            resultField.rows = 10;
+            resultField.readOnly = true;
+            resultField.placeholder = 'Encrypted data and keys will appear here...';
+
+            encryptButton.addEventListener('click', async () => {
+                try {
+                    const response = await fetch('/geo/encrypt', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({  }),
+                    });
+    
+                    const data = await response.json();
+    
+                    if (response.ok) {
+                        resultField.value = `Ciphertext: ${data.ciphertext}\n\nPublic Key:\n${data.public_key}\n\nPrivate Key:\n${data.private_key}`;
+                    } else {
+                        resultField.value = `Error: ${data.error}`;
+                    }
+                }
+                catch {
+
+                }
+            });  
+        }
+
+        // @ts-ignore
         dynamicContent.appendChild(resultField);
     });
 });
