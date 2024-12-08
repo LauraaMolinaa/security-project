@@ -483,7 +483,7 @@ document.addEventListener('DOMContentLoaded', () => {
      * Button 4: Geo Encrypt/Decrypt
      */
     // @ts-ignore
-    btnOption4.addEventListener('click', () => {
+    btnGeo.addEventListener('click', () => {
         clearDynamicContent();
 
         if(currentMode === 'encrypt') {
