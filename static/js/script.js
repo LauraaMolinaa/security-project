@@ -444,7 +444,7 @@ document.addEventListener('DOMContentLoaded', () => {
             resultField.placeholder = 'Encrypted data and keys will appear here...';
 
             const keyField = document.createElement('textarea');
-            keyField.rows = 1;
+            keyField.rows = 2;
             keyField.readOnly = true;
             keyField.placeholder = 'Key will appear here...';
 
@@ -470,8 +470,73 @@ document.addEventListener('DOMContentLoaded', () => {
                     const data = await response.json();
     
                     if (response.ok) {
-                        resultField.value = `Ciphertext: ${data.ciphertext}\n\nPublic Key:\n${data.public_key}\n\nPrivate Key:\n${data.private_key}`;
-                        keyField.value = `Public Key:\n${data.public_key}`;
+                        resultField.value = `${data.ciphertext}`;
+                        keyField.value = `Title:${data.title}\nArtist:${data.artist}`;
+                    } else {
+                        resultField.value = `Error: ${data.error}`;
+                    }
+                } catch (error) {
+                    resultField.value = 'An error occurred during encryption.';
+                }
+            });
+        }
+        else{
+            //Song encryption UI
+            const messageField = document.createElement('textarea');
+            messageField.rows = 3;
+            messageField.placeholder = 'Enter the message to decrypt...';
+
+            const titleField = document.createElement('textarea');
+            titleField.rows = 1;
+            titleField.placeholder = 'Enter the title key...';
+
+            const artistField = document.createElement('textarea');
+            artistField.rows = 1;
+            artistField.placeholder = 'Enter the artist key...';
+
+
+            const decryptButton = document.createElement('button');
+            decryptButton.textContent = 'Decrypt';
+
+            const resultField = document.createElement('textarea');
+            resultField.rows = 10;
+            resultField.readOnly = true;
+            resultField.placeholder = 'Encrypted data and keys will appear here...';
+
+            const keyField = document.createElement('textarea');
+            keyField.rows = 2;
+            keyField.readOnly = true;
+            keyField.placeholder = 'Key will appear here...';
+
+            dynamicContent.appendChild(messageField);
+            dynamicContent.appendChild(titleField);
+            dynamicContent.appendChild(artistField);
+            dynamicContent.appendChild(decryptButton);
+            dynamicContent.appendChild(resultField);
+            dynamicContent.appendChild(keyField);
+
+            decryptButton.addEventListener('click', async () => {
+                const ciphertext = messageField.value.trim();
+                if (!ciphertext) {
+                    resultField.value = 'Please enter a message.';
+                    return;
+                }
+    
+                try {
+                    const response = await fetch('/song/decrypt', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ 
+                            ciphertext, 
+                            titleKey: titleField.value, 
+                            artistKey: artistField.value }),
+                    });
+    
+                    const data = await response.json();
+    
+                    if (response.ok) {
+                        resultField.value = `${data.ciphertext}`;
+                        keyField.value = `Title:${data.title}\nArtist:${data.artist}`;
                     } else {
                         resultField.value = `Error: ${data.error}`;
                     }
