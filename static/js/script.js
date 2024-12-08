@@ -494,7 +494,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const resultField = document.createElement('textarea');
             resultField.rows = 10;
             resultField.readOnly = true;
-            resultField.placeholder = 'Encrypted data and keys will appear here...';
+            resultField.placeholder = 'Encrypted data and key will appear here...';
 
             encryptButton.addEventListener('click', async () => {
                 try {
@@ -507,13 +507,73 @@ document.addEventListener('DOMContentLoaded', () => {
                     const data = await response.json();
     
                     if (response.ok) {
-                        resultField.value = `Ciphertext: ${data.ciphertext}\n\nPublic Key:\n${data.public_key}\n\nPrivate Key:\n${data.private_key}`;
+                        resultField.value = `Ciphertext: ${data.ciphertext}\n\nKey:\n${data.key}\n\nNonce: ${data.nonce}`;
                     } else {
                         resultField.value = `Error: ${data.error}`;
                     }
                 }
                 catch {
+                    resultField.value = 'An error occurred during decryption.';
+                }
+            });  
+        }
+        else 
+        {
+            const ciphertextField = document.createElement('textarea');
+            ciphertextField.rows = 3;
+            ciphertextField.placeholder = 'Enter the ciphertext...';
+    
+            const keyField = document.createElement('textarea');
+            keyField.rows = 5;
+            keyField.placeholder = 'Enter the key...';
 
+            const nonceField = document.createElement('textarea');
+            nonceField.rows = 5;
+            nonceField.placeholder = 'Enter the nonce...';
+    
+            const decryptButton = document.createElement('button');
+            decryptButton.textContent = 'Decrypt';
+    
+            const resultField = document.createElement('textarea');
+            resultField.rows = 10;
+            resultField.readOnly = true;
+            resultField.placeholder = 'Decrypted message will appear here...';
+
+            // @ts-ignore
+            dynamicContent.appendChild(ciphertextField);
+            // @ts-ignore
+            dynamicContent.appendChild(keyField);
+            // @ts-ignore
+            dynamicContent.appendChild(nonceField);
+            // @ts-ignore
+            dynamicContent.appendChild(resultField);
+
+            decryptButton.addEventListener('click', async () => {
+                const ciphertext = ciphertextField.value.trim();
+                const key = keyField.value.trim();
+                const nonce = nonceField.value.trim();
+        
+                if (!ciphertext || !key || !nonce) {
+                    resultField.value = 'Please enter both ciphertext, key and nonce.';
+                    return;
+                }
+        
+                try {
+                    const response = await fetch('/geo/decrypt', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ ciphertext, key, nonce }),
+                    });
+        
+                    const data = await response.json();
+        
+                    if (response.ok) {
+                        resultField.value = `Decrypted Message: ${data.plaintext}`;
+                    } else {
+                        resultField.value = `Error: ${data.error}`;
+                    }
+                } catch (error) {
+                    resultField.value = 'An error occurred during decryption.';
                 }
             });  
         }
