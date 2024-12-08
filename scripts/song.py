@@ -26,14 +26,15 @@ def song_encrypt(request):
     #newMessage = ceaserCipher(message, titleLenght, True) #true == add
 
     #vigenere Cipher
-    encryptedMessage = asciiCipher(message, song.lyrics, True)
+    encryptedMessage = asciiCipher_encrypt(message, song.lyrics)
     
-    encryptedMessageLenght = len(encryptedMessage)
+    encryptedArtistLenght = len(song.artist)
 
-    encryptedTitle = ceaserCipher(song.title, encryptedMessageLenght, True)
-    encryptedArtist = ceaserCipher(song.artist, encryptedMessageLenght, True)
+    encryptedTitle = ceaserCipher(song.title, encryptedArtistLenght, True)
+    encryptedArtist = ceaserCipher(song.artist, encryptedArtistLenght, True)
 
-    
+    print(song.title)
+    print(song.artist)
     return jsonify({
         'ciphertext': encryptedMessage,
         'title': encryptedTitle,
@@ -46,11 +47,11 @@ def song_decrypt(request):
     artistKey = data.get('artistKey')
 
     #Getting the message lenght
-    ciphertextLenght = len(ciphertext)
+    artistLenght = len(artistKey)
 
     #Decrypting the title and artist
-    title = ceaserCipher(titleKey, ciphertextLenght, False)
-    artist = ceaserCipher(artistKey, ciphertextLenght, False)
+    title = ceaserCipher(titleKey, artistLenght, False)
+    artist = ceaserCipher(artistKey, artistLenght, False)
 
     genius = Genius("ytTQBFpeW9m1wOxySiu-h1mIJ_0qiv2E52oRSqoYR8NV5wE9Xka-Ngh2ugLUU88y")
     song = genius.search_song(title,artist)
@@ -58,7 +59,7 @@ def song_decrypt(request):
     if song is None:
         return jsonify({'error': 'Failed to retrieve song lyrics.'}), 500
 
-    plaintext = asciiCipher(ciphertext, song.lyrics, False)
+    plaintext = asciiCipher_decrypt(ciphertext, song.lyrics)
 
     return jsonify({
         'message': plaintext,
@@ -96,43 +97,51 @@ def ceaserCipher(message, number, add):
     
     return shiftedMessage
 
-def asciiCipher(message, lyrics, add):
-    # Skipping the first line
+def asciiCipher_encrypt(message, lyrics):
+    #skip the first line
     lines = lyrics.split('\n')
-    songLyrics = '\n'.join(lines[1:])
+    songLyrics = ''.join(lines[1:])
 
-    #making sure the lyrics are long enought
     if len(songLyrics) < len(message):
-     songLyrics += "a" * (len(message) - len(songLyrics))
-    
-    cryptedMessage = ""
+        songLyrics += "a" * (len(message) - len(songLyrics))
+
+    encryptedMessage = ""
     counter = 0
 
     for letter in message:
-        if counter < len(songLyrics):
-            # skip spaces or newline
-            while songLyrics[counter] in [' ', '\n']:
-                counter += 1
+        messageAscii = ord(letter)
+        lyricAscii = ord(songLyrics[counter])
 
-            if add:
-                if letter == ' ':
-                    letter = '_'
-                newLetter = chr((ord(letter) + ord(songLyrics[counter])) % 128)
-            else:
-                newLetter = chr((ord(letter) - ord(songLyrics[counter])) % 128)
-                if newLetter == '_':
-                    newLetter = ' '
-            
-            newLetterOrd = ord(newLetter)
-            
-            if newLetterOrd < 32: 
-                newLetterOrd = 32
-            elif newLetterOrd > 126: 
-                newLetterOrd = 32 + (newLetterOrd - 127)
-                
-            cryptedMessage += chr(newLetterOrd)
+        newAscii = messageAscii + lyricAscii
+        encryptedMessage += str(newAscii)
+        encryptedMessage += "-"
+        counter = counter + 1
+
+    return encryptedMessage
+
+def asciiCipher_decrypt(encryptedMessage, lyrics):
+    lines = lyrics.split('\n')
+    songLyrics = ''.join(lines[1:])
+
+    if len(songLyrics) < len(encryptedMessage):
+        songLyrics += "a" * (len(encryptedMessage) - len(songLyrics))
+
+    encryptedNumbers = encryptedMessage.split('-')
+
+    decryptedMessage = ""
+    counter = 0
+
+    for value in encryptedNumbers:
+        if value != "":
+            number = int(value)
+
+            lyricLetter = songLyrics[counter]
+            lyricAscii = ord(lyricLetter)
+
+            originalAscii = number - lyricAscii
+
+            decryptedMessage += chr(originalAscii)
+
             counter += 1
-        else:
-            cryptedMessage += letter
 
-    return cryptedMessage
+    return decryptedMessage
