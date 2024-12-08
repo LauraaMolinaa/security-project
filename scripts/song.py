@@ -17,15 +17,8 @@ def song_encrypt(request):
 
     if song is None:
         return jsonify({'error': 'Failed to retrieve song lyrics.'}), 500
-    
 
-    #getting the lenght of the song title
-    titleLenght = len(song.title)
-
-    #CeaserCipher
-    #newMessage = ceaserCipher(message, titleLenght, True) #true == add
-
-    #vigenere Cipher
+    #asciiCipher Cipher
     encryptedMessage = asciiCipher_encrypt(message, song.lyrics)
     
     encryptedArtistLenght = len(song.artist)
