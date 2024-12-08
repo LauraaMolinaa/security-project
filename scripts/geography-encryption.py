@@ -7,7 +7,7 @@ from Cryptodome.Cipher import AES
 from Cryptodome.Random import get_random_bytes
 import os
 
-def main(request = None):
+def geo_encryption(request):
   payload = {}
   headers= {
     "apikey": "0kyJpyoUHDRbexeoyYNOuakAo8QzfkmX"
@@ -53,7 +53,19 @@ def main(request = None):
   # converting the secret data to bytes 
   ciphertext = cipher_encrypt.encrypt(secret_data_bytes)
   nonce = cipher_encrypt.nonce
+  
+  return jsonify({
+    'ciphertext': ciphertext, 
+    'nonce': nonce, 
+    'key': key
+  })
 
+def geo_decryption(request):
+  data = request.json
+  ciphertext = data.get('ciphertext')
+  nonce = data.get('nonce')
+  key = data.get('key')
+  
   cipher_decrypt = AES.new(key, AES.MODE_EAX, nonce)
   decrypted_data_salt = cipher_decrypt.decrypt(ciphertext)
 
@@ -67,7 +79,7 @@ def main(request = None):
   ascii_to_data = decrypted_data.decode('utf-8')
 
   i = 0
-  data: str = ""
+  decrypted_capital: str = ""
 
   while i < len(ascii_to_data) - 2:
     ascii_nbr = ascii_to_data[i] + ascii_to_data[i + 1] + ascii_to_data[i + 2]
@@ -75,32 +87,19 @@ def main(request = None):
     if int(ascii_nbr) > ord('z'):
       ascii_nbr = ascii_to_data[i] + ascii_to_data[i + 1]
       print(chr(int(ascii_nbr)))
-      data += chr(int(ascii_nbr))
+      decrypted_capital += chr(int(ascii_nbr))
       i = i + 2
       
     else: 
       print(chr(int(ascii_nbr)))
-      data += chr(int(ascii_nbr))
+      decrypted_capital += chr(int(ascii_nbr))
       i = i + 3
 
-  # return jsonify({
-  #   'ciphertext': ciphertext, 
-  #   'nonce': nonce, 
-  #   'key': key
-  # })
+  if data is None:
+    return jsonify({'error': 'Data could not be decrypted.'}), 404
 
-def geo_decryption(request):
-  # data = request.json
-  # ciphertext = data.get('ciphertext')
-  # nonce = data.get('nonce')
-  # key = data.get('key')
-
-  # cipher = AES.new(key, AES.MODE_EAX, nonce)
-  # data = cipher.decrypt(ciphertext)
-  return
-
-
-if __name__ == "__main__":
-  main()
+  return jsonify({
+    'capital': decrypted_capital
+  })
 
 
