@@ -5,15 +5,16 @@ import random
 from Cryptodome.Cipher import AES
 from Cryptodome.Random import get_random_bytes
 import os
+import ast
 
-def geo_encryption(request):
+def geo_encryption():
   payload = {}
   headers= {
     "apikey": "0kyJpyoUHDRbexeoyYNOuakAo8QzfkmX"
   }
 
   country_codes_list: list = [
-      "ven", "jam", "dza", "arm", "bhs", "bgr", "chn", "flk", "gum", "ita", "lby", "mli", "nzl", "png", "zaf" 
+      "ven", "arm", "atg", "bhs", "can", "chn", "dza", "flk", "jam", "ita", "lby", "maf", "mli", "nzl", "pan", "sgp", "slv", "zaf" 
   ]
 
   country: str = random.choice(country_codes_list)
@@ -48,9 +49,9 @@ def geo_encryption(request):
   nonce = cipher_encrypt.nonce
   
   return jsonify({
-    'ciphertext': ciphertext, 
-    'nonce': nonce, 
-    'key': key
+    'ciphertext': str(ciphertext), 
+    'nonce': str(nonce), 
+    'key': str(key)
   })
 
 def data_to_ascii(capital):
@@ -64,11 +65,18 @@ def data_to_ascii(capital):
 
 def geo_decryption(request):
   data = request.json
-  ciphertext = data.get('ciphertext')
-  nonce = data.get('nonce')
-  key = data.get('key')
+  ciphertext_as_string = data.get('ciphertext')
+  nonce_as_string = data.get('nonce')
+  key_as_string = data.get('key')
+
+  ciphertext = ast.literal_eval(ciphertext_as_string)
+  print("ciphertext", ciphertext)
+  key = ast.literal_eval(key_as_string)
+  print("key", key)
+  nonce = ast.literal_eval(nonce_as_string)
+  print("nonce", nonce)
   
-  cipher_decrypt = AES.new(key, AES.MODE_EAX, nonce)
+  cipher_decrypt = AES.new(key, AES.MODE_EAX, bytes(nonce))
   decrypted_data_salt = cipher_decrypt.decrypt(ciphertext)
 
   # ignoring salt
@@ -76,29 +84,36 @@ def geo_decryption(request):
   if len(decrypted_data_salt) > 32:
     decrypted_data = decrypted_data_salt[:-32]
   else: 
-    print("no bytes to decrypt, only salt")
+    return jsonify({'error': 'There are no bytes to decrypt only salt'}), 404
     
   ascii_to_data = decrypted_data.decode('utf-8')
 
   i = 0
   decrypted_capital: str = ""
 
-  while i < len(ascii_to_data) - 2:
-    ascii_nbr = ascii_to_data[i] + ascii_to_data[i + 1] + ascii_to_data[i + 2]
-    
-    if int(ascii_nbr) > ord('z'):
-      ascii_nbr = ascii_to_data[i] + ascii_to_data[i + 1]
-      print(chr(int(ascii_nbr)))
-      decrypted_capital += chr(int(ascii_nbr))
-      i = i + 2
-      
-    else: 
-      print(chr(int(ascii_nbr)))
-      decrypted_capital += chr(int(ascii_nbr))
-      i = i + 3
+  while i < len(ascii_to_data):
+    if i + 2 < len(ascii_to_data):
+      ascii_nbr: int = int(ascii_to_data[i] + ascii_to_data[i + 1] + ascii_to_data[i + 2])
+      if ascii_nbr > ord('z'):
+        ascii_nbr = int(str(ascii_to_data[i] + ascii_to_data[i + 1]))
+        print(chr(ascii_nbr))
+        decrypted_capital += chr(ascii_nbr)
+        i = i + 2
+        
+      else: 
+        print(chr(ascii_nbr))
+        decrypted_capital += chr(ascii_nbr)
+        i = i + 3
 
-  if data is None:
+    else:
+      ascii_nbr = int(ascii_to_data[i] + ascii_to_data[i + 1])
+      decrypted_capital += chr(ascii_nbr)
+      break
+
+  if decrypted_capital is None:
     return jsonify({'error': 'Data could not be decrypted.'}), 404
+
+  print(decrypted_capital)
 
   return jsonify({
     'capital': decrypted_capital

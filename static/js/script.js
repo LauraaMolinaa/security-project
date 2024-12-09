@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnEncryptDecrypt = document.getElementById('btnEncryptDecrypt');
     const btnImageOptions = document.getElementById('btnImageOptions');
     const btnOption3 = document.getElementById('btnOption3');
-    const btnOption4 = document.getElementById('btnOption4');
+    const btnGeo = document.getElementById('btnGeo');
 
     let currentMode = 'encrypt'; // Default mode is Encrypt
 
@@ -486,6 +486,8 @@ document.addEventListener('DOMContentLoaded', () => {
     btnGeo.addEventListener('click', () => {
         clearDynamicContent();
 
+        console.log('geo button clicked', currentMode)
+
         if(currentMode === 'encrypt') {
 
             const encryptButton = document.createElement('button');
@@ -496,6 +498,9 @@ document.addEventListener('DOMContentLoaded', () => {
             resultField.readOnly = true;
             resultField.placeholder = 'Encrypted data and key will appear here...';
 
+            dynamicContent?.appendChild(encryptButton)
+            dynamicContent?.appendChild(resultField)
+
             encryptButton.addEventListener('click', async () => {
                 try {
                     const response = await fetch('/geo/encrypt', {
@@ -503,6 +508,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({  }),
                     });
+
+                    console.log(response)
     
                     const data = await response.json();
     
@@ -512,8 +519,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         resultField.value = `Error: ${data.error}`;
                     }
                 }
-                catch {
-                    resultField.value = 'An error occurred during decryption.';
+                catch(error) {
+                    resultField.value = `An error occurred during encryption. Exception: ${error}`;
                 }
             });  
         }
@@ -524,29 +531,26 @@ document.addEventListener('DOMContentLoaded', () => {
             ciphertextField.placeholder = 'Enter the ciphertext...';
     
             const keyField = document.createElement('textarea');
-            keyField.rows = 5;
+            keyField.rows = 3;
             keyField.placeholder = 'Enter the key...';
 
             const nonceField = document.createElement('textarea');
-            nonceField.rows = 5;
+            nonceField.rows = 3;
             nonceField.placeholder = 'Enter the nonce...';
     
             const decryptButton = document.createElement('button');
             decryptButton.textContent = 'Decrypt';
     
             const resultField = document.createElement('textarea');
-            resultField.rows = 10;
+            resultField.rows = 3;
             resultField.readOnly = true;
             resultField.placeholder = 'Decrypted message will appear here...';
 
-            // @ts-ignore
-            dynamicContent.appendChild(ciphertextField);
-            // @ts-ignore
-            dynamicContent.appendChild(keyField);
-            // @ts-ignore
-            dynamicContent.appendChild(nonceField);
-            // @ts-ignore
-            dynamicContent.appendChild(resultField);
+            dynamicContent?.appendChild(ciphertextField);
+            dynamicContent?.appendChild(keyField);
+            dynamicContent?.appendChild(nonceField);
+            dynamicContent?.appendChild(decryptButton)
+            dynamicContent?.appendChild(resultField);
 
             decryptButton.addEventListener('click', async () => {
                 const ciphertext = ciphertextField.value.trim();
@@ -558,7 +562,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     return;
                 }
         
-                try {
+                try {   
                     const response = await fetch('/geo/decrypt', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -568,7 +572,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const data = await response.json();
         
                     if (response.ok) {
-                        resultField.value = `Decrypted Message: ${data.plaintext}`;
+                        resultField.value = `Decrypted Message: ${data.capital}`;
                     } else {
                         resultField.value = `Error: ${data.error}`;
                     }
@@ -578,7 +582,5 @@ document.addEventListener('DOMContentLoaded', () => {
             });  
         }
 
-        // @ts-ignore
-        dynamicContent.appendChild(resultField);
     });
 });

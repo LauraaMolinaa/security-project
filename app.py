@@ -128,7 +128,7 @@ def geo_encrypt_endpoint():
 
 @app.route('/geo/decrypt', methods=['POST'])
 def geo_decrypt_endpoint():
-    return geo_decryption()
+    return geo_decryption(request)
 
 if __name__ == '__main__':
     app.run(debug=True)
