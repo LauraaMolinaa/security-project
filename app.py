@@ -7,6 +7,7 @@ from scripts.vigenere import encrypt_to_ascii_art, decrypt_from_ascii_art
 from scripts.stegano import generate_image, encode_message, decode_message
 from scripts.rsa import rsa_encrypt, rsa_decrypt
 from scripts.geo import geo_encryption, geo_decryption
+from scripts.song import song_encrypt, song_decrypt
 from stegano import lsb
 from io import BytesIO
 
@@ -129,6 +130,15 @@ def geo_encrypt_endpoint():
 @app.route('/geo/decrypt', methods=['POST'])
 def geo_decrypt_endpoint():
     return geo_decryption(request)
+
+# Song Endpoints
+@app.route('/song/encrypt', methods=['POST'])
+def song_encrypt_endpoint():
+    return song_encrypt(request)
+
+@app.route('/song/decrypt', methods=['POST'])
+def song_decrypt_endpoint():
+    return song_decrypt(request)
 
 if __name__ == '__main__':
     app.run(debug=True)
