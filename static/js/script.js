@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnEncryptDecrypt = document.getElementById('btnEncryptDecrypt');
     const btnImageOptions = document.getElementById('btnImageOptions');
     const btnOption3 = document.getElementById('btnOption3');
-    const btnOption4 = document.getElementById('btnOption4');
+    const btnGeo = document.getElementById('btnGeo');
 
     let currentMode = 'encrypt'; // Default mode is Encrypt
 
@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
      * Clear all dynamic content.
      */
     const clearDynamicContent = () => {
+
         dynamicContent.innerHTML = '';
     };
 
@@ -25,7 +26,9 @@ document.addEventListener('DOMContentLoaded', () => {
         currentMode = mode;
 
         // Toggle active tab styling
+
         tabEncrypt.classList.toggle('active', mode === 'encrypt');
+
         tabDecrypt.classList.toggle('active', mode === 'decrypt');
 
         clearDynamicContent(); // Clear the dynamic content
@@ -57,9 +60,13 @@ document.addEventListener('DOMContentLoaded', () => {
         resultField.readOnly = true;
         resultField.placeholder = `Result will appear here...`;
 
+
         dynamicContent.appendChild(messageField);
+
         dynamicContent.appendChild(keyField);
+
         dynamicContent.appendChild(processButton);
+
         dynamicContent.appendChild(resultField);
 
         processButton.addEventListener('click', async () => {
@@ -139,18 +146,26 @@ document.addEventListener('DOMContentLoaded', () => {
             encryptButton.textContent = 'Encrypt';
 
             selectOption.addEventListener('change', (e) => {
+        
                 const selected = e.target.value;
                 uploadInput.style.display = selected === 'upload' ? 'block' : 'none';
                 promptField.style.display = selected === 'ai' ? 'block' : 'none';
                 generateButton.style.display = selected === 'ai' ? 'block' : 'none';
             });
 
+    
             dynamicContent.appendChild(messageField);
+    
             dynamicContent.appendChild(passkeyField);
+    
             dynamicContent.appendChild(selectOption);
+    
             dynamicContent.appendChild(uploadInput);
+    
             dynamicContent.appendChild(promptField);
+    
             dynamicContent.appendChild(generateButton);
+    
             dynamicContent.appendChild(encryptButton);
 
             generateButton.addEventListener('click', async () => {
@@ -164,6 +179,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const loadingIndicator = document.createElement('div');
                 loadingIndicator.textContent = 'Generating image... Please wait.';
                 loadingIndicator.classList.add('loading-indicator');
+        
                 dynamicContent.insertBefore(loadingIndicator, encryptButton);
             
                 try {
@@ -183,9 +199,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         imgPreview.alt = 'Generated Image Preview';
                         imgPreview.style.width = '200px';
                         imgPreview.classList.add('generated-image');
+                
                         dynamicContent.replaceChild(imgPreview, loadingIndicator);
             
                         // Add a save button if it doesn't already exist
+                
                         const saveButton = dynamicContent.querySelector('button.save-image');
                         if (!saveButton) {
                             const newSaveButton = document.createElement('button');
@@ -197,15 +215,18 @@ document.addEventListener('DOMContentLoaded', () => {
                                 link.download = 'generated_image.png';
                                 link.click();
                             });
+                    
                             dynamicContent.insertBefore(newSaveButton, encryptButton.nextSibling);
                         }
                     } else {
                         const error = await response.json();
                         alert(`Error: ${error.error}`);
+                
                         dynamicContent.removeChild(loadingIndicator);
                     }
                 } catch (error) {
                     alert('Error during image generation.');
+            
                     dynamicContent.removeChild(loadingIndicator);
                 }
             });
@@ -247,6 +268,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         imgPreview.src = url;
                         imgPreview.alt = 'Encoded Image Preview';
                         imgPreview.style.width = '200px';
+                
                         dynamicContent.appendChild(imgPreview);
             
                         // Add a save button
@@ -258,6 +280,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             link.download = 'encoded_image.png';
                             link.click();
                         });
+                
                         dynamicContent.appendChild(saveButton);
                     } else {
                         const error = await response.json();
@@ -285,9 +308,13 @@ document.addEventListener('DOMContentLoaded', () => {
             resultField.readOnly = true;
             resultField.placeholder = 'Decoded message will appear here...';
 
+    
             dynamicContent.appendChild(uploadInput);
+    
             dynamicContent.appendChild(passkeyField);
+    
             dynamicContent.appendChild(decryptButton);
+    
             dynamicContent.appendChild(resultField);
 
             decryptButton.addEventListener('click', async () => {
@@ -323,6 +350,7 @@ document.addEventListener('DOMContentLoaded', () => {
      */
         const btnRSA = document.getElementById('btnRSA');
 
+
         btnRSA.addEventListener('click', () => {
             clearDynamicContent();
         
@@ -340,8 +368,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 resultField.readOnly = true;
                 resultField.placeholder = 'Encrypted data and keys will appear here...';
         
+        
                 dynamicContent.appendChild(messageField);
+        
                 dynamicContent.appendChild(encryptButton);
+        
                 dynamicContent.appendChild(resultField);
         
                 encryptButton.addEventListener('click', async () => {
@@ -387,9 +418,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 resultField.readOnly = true;
                 resultField.placeholder = 'Decrypted message will appear here...';
         
+        
                 dynamicContent.appendChild(ciphertextField);
+        
                 dynamicContent.appendChild(privateKeyField);
+        
                 dynamicContent.appendChild(decryptButton);
+        
                 dynamicContent.appendChild(resultField);
         
                 decryptButton.addEventListener('click', async () => {
@@ -548,20 +583,111 @@ document.addEventListener('DOMContentLoaded', () => {
 
         
 
+
         dynamicContent.appendChild(resultField);
     });
 
     /**
      * Button 4: Geo Encrypt/Decrypt
      */
-    btnOption4.addEventListener('click', () => {
+    btnGeo.addEventListener('click', () => {
         clearDynamicContent();
 
-        const resultField = document.createElement('textarea');
-        resultField.rows = 5;
-        resultField.readOnly = true;
-        resultField.placeholder = `Geo ${currentMode} results...`;
+        console.log('geo button clicked', currentMode)
 
-        dynamicContent.appendChild(resultField);
+        if(currentMode === 'encrypt') {
+
+            const encryptButton = document.createElement('button');
+            encryptButton.textContent = 'Encrypt';
+
+            const resultField = document.createElement('textarea');
+            resultField.rows = 10;
+            resultField.readOnly = true;
+            resultField.placeholder = 'Encrypted data and key will appear here...';
+
+            dynamicContent?.appendChild(encryptButton)
+            dynamicContent?.appendChild(resultField)
+
+            encryptButton.addEventListener('click', async () => {
+                try {
+                    const response = await fetch('/geo/encrypt', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({  }),
+                    });
+
+                    console.log(response)
+    
+                    const data = await response.json();
+    
+                    if (response.ok) {
+                        resultField.value = `Ciphertext: ${data.ciphertext}\n\nKey:\n${data.key}\n\nNonce: ${data.nonce}`;
+                    } else {
+                        resultField.value = `Error: ${data.error}`;
+                    }
+                }
+                catch(error) {
+                    resultField.value = `An error occurred during encryption. Exception: ${error}`;
+                }
+            });  
+        }
+        else 
+        {
+            const ciphertextField = document.createElement('textarea');
+            ciphertextField.rows = 3;
+            ciphertextField.placeholder = 'Enter the ciphertext...';
+    
+            const keyField = document.createElement('textarea');
+            keyField.rows = 3;
+            keyField.placeholder = 'Enter the key...';
+
+            const nonceField = document.createElement('textarea');
+            nonceField.rows = 3;
+            nonceField.placeholder = 'Enter the nonce...';
+    
+            const decryptButton = document.createElement('button');
+            decryptButton.textContent = 'Decrypt';
+    
+            const resultField = document.createElement('textarea');
+            resultField.rows = 3;
+            resultField.readOnly = true;
+            resultField.placeholder = 'Decrypted message will appear here...';
+
+            dynamicContent?.appendChild(ciphertextField);
+            dynamicContent?.appendChild(keyField);
+            dynamicContent?.appendChild(nonceField);
+            dynamicContent?.appendChild(decryptButton)
+            dynamicContent?.appendChild(resultField);
+
+            decryptButton.addEventListener('click', async () => {
+                const ciphertext = ciphertextField.value.trim();
+                const key = keyField.value.trim();
+                const nonce = nonceField.value.trim();
+        
+                if (!ciphertext || !key || !nonce) {
+                    resultField.value = 'Please enter both ciphertext, key and nonce.';
+                    return;
+                }
+        
+                try {   
+                    const response = await fetch('/geo/decrypt', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ ciphertext, key, nonce }),
+                    });
+        
+                    const data = await response.json();
+        
+                    if (response.ok) {
+                        resultField.value = `Decrypted Message: ${data.capital}`;
+                    } else {
+                        resultField.value = `Error: ${data.error}`;
+                    }
+                } catch (error) {
+                    resultField.value = 'An error occurred during decryption.';
+                }
+            });  
+        }
+
     });
 });

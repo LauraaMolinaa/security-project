@@ -6,6 +6,7 @@ from flask import Flask, request, jsonify, render_template, send_file
 from scripts.vigenere import encrypt_to_ascii_art, decrypt_from_ascii_art
 from scripts.stegano import generate_image, encode_message, decode_message
 from scripts.rsa import rsa_encrypt, rsa_decrypt
+from scripts.geo import geo_encryption, geo_decryption
 from scripts.song import song_encrypt, song_decrypt
 from stegano import lsb
 from io import BytesIO
@@ -121,6 +122,14 @@ def rsa_encrypt_endpoint():
 def rsa_decrypt_endpoint():
     return rsa_decrypt(request)
 
+# GEO endpoints 
+@app.route('/geo/encrypt', methods=['POST'])
+def geo_encrypt_endpoint():
+    return geo_encryption()
+
+@app.route('/geo/decrypt', methods=['POST'])
+def geo_decrypt_endpoint():
+    return geo_decryption(request)
 
 # Song Endpoints
 @app.route('/song/encrypt', methods=['POST'])
